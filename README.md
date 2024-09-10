@@ -81,25 +81,52 @@ The following data points are extracted and processed:
 - **Safety Status**: Whether the website is considered safe, unsafe, or suspicious.
 - **Reputation Scores**: Reputation scores for general safety and child safety, ranging from 0 to 100.
 - **Category Information**: Categories associated with the website, such as "phishing" or "social media".
+You're right! The Airflow UI needs to be set up first before defining the DAGs, and the scheduling part is key in setting up the automation. Here's the revised step-by-step process with the correct order, including Airflow scheduling.
+
+---
 
 ## Step-by-Step Implementation
 
 ### Step 1: Set up EC2 and install dependencies
 
-- Launch an EC2 instance on AWS, and configure it with the necessary security group and SSH access.
-- Install Python and Airflow on the EC2 instance.
-- Set up a Python virtual environment to isolate dependencies. Install required libraries such as `requests`, `pandas`, and `boto3`.
+1. **Launch an EC2 instance** on AWS, configure security group settings to allow SSH (port 22) and Airflow (port 8080) access.
+2. **Install Python and Airflow** on the EC2 instance.
+3. **Set up a Python virtual environment** to isolate dependencies. Install required libraries like `requests`, `pandas`, and `boto3`.
 
 ```bash
 # Update the system and install Python
 sudo yum update -y
 sudo yum install python3
 
+# Install virtual environment and Airflow
+python3 -m venv airflow_env
+source airflow_env/bin/activate
+
 # Install Apache Airflow and other dependencies
 pip install apache-airflow pandas requests boto3
 ```
 
-### Step 2: Configure Airflow HTTP Connection to WOT API
+### Step 2: Start Airflow Webserver and Scheduler
+
+1. **Initialize Airflow** database and start the webserver:
+
+```bash
+# Initialize Airflow database
+airflow db init
+
+# Start Airflow webserver
+airflow webserver --port 8080
+```
+
+2. **Start the Airflow scheduler** to enable the scheduling of DAGs:
+
+```bash
+airflow scheduler
+```
+
+3. **Access the Airflow UI** by opening a web browser and navigating to `http://<your-ec2-public-ip>:8080`. Make sure port 8080 is open in your EC2 security group to allow access.
+
+### Step 3: Configure Airflow HTTP Connection to WOT API
 
 In the Airflow UI:
 - Navigate to **Admin > Connections**.
@@ -109,7 +136,7 @@ In the Airflow UI:
   - **Host**: `https://scorecard.api.mywot.com`
   - Leave other fields empty, as authentication will be provided in the DAG.
     
-### Step 3: Store API Key in Airflow Variable**
+### Step 4: Store API Key in Airflow Variable**
 For better security and flexibility, store the WOT API key in Airflow’s Variables so that the API key can be dynamically accessed in your DAG code without hardcoding it:
 
 In the Airflow UI, go to Admin > Variables.
@@ -117,7 +144,7 @@ Create a new variable:
 Key: wot_api_key
 Value: <your_api_key>
 
-### Step 4: Create the Airflow DAG
+### Step 5: Create the Airflow DAG
 
 Store the 
 The DAG (Directed Acyclic Graph) defines the workflow. The DAG fetches data from the WOT API, processes it, and stores the result in AWS S3.
@@ -170,12 +197,12 @@ with DAG(
     fetch_wot_data >> process_data
 ```
 
-### Step 5: Monitor and automate
+### Step 6: Automate and Schedule the Pipeline
 
-- Use Airflow’s web interface to monitor the status of your tasks, logs, and schedules.
-- Trigger DAG runs and view logs to ensure that the API calls, processing steps, and data storage are working correctly.
+- The Airflow scheduler will automatically trigger the DAG based on the defined schedule (`@daily` in this case).
+- You can monitor DAG runs, view logs, and see task progress in the Airflow UI under the **DAGs** section.
 
-### Step 6: Store data in AWS S3
+### Step 7: Store data in AWS S3
 
 Processed data is uploaded to AWS S3 for persistent storage:
 
