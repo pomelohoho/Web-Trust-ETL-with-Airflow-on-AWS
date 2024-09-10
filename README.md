@@ -109,7 +109,7 @@ In the Airflow UI:
   - **Host**: `https://scorecard.api.mywot.com`
   - Leave other fields empty, as authentication will be provided in the DAG.
     
-## Step 3: Store API Key in Airflow Variable**
+### Step 3: Store API Key in Airflow Variable**
 For better security and flexibility, store the WOT API key in Airflow’s Variables so that the API key can be dynamically accessed in your DAG code without hardcoding it:
 
 In the Airflow UI, go to Admin > Variables.
