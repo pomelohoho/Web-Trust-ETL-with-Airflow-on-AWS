@@ -31,11 +31,6 @@ The architecture consists of several components that work together to automate t
 - **Data Storage**: The processed data is uploaded and stored in AWS S3 buckets.
 - **Automation**: Airflow schedules and automates the ETL process, triggering it at regular intervals or based on specific conditions.
 
-<p align="center">
-  <img width="1000" height="550" src="https://example.com/path-to-image.png">
-  <h6 align="center"> Source: Author </h6>
-</p>
-
 ## Workflow Overview
 
 1. **Data extraction**: 
