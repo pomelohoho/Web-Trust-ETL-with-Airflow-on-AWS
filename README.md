@@ -229,4 +229,4 @@ Why use the tools in this project:
 
 - **Website reputation monitoring**: This pipeline can be used to regularly monitor the reputation of websites to ensure they remain safe for users. This could be particularly useful for security firms, parental control applications, or businesses that want to ensure they are not linking to harmful sites.
   
-- **Domain Trustworthiness Analysis**: Companies can use the reputation data from the WOT API to evaluate potential partners, suppliers, or affiliates based on the trustworthiness of their domains.
+- **Domain trustworthiness analysis**: Companies can use the reputation data from the WOT API to evaluate potential partners, suppliers, or affiliates based on the trustworthiness of their domains.
