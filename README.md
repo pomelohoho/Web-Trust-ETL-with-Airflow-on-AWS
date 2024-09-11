@@ -106,7 +106,7 @@ source airflow_env/bin/activate
 pip install apache-airflow pandas requests boto3
 ```
 <p align="center">
-  <img width="1000" height="550" src="">
+  <img width="1000" height="550" src="Images/ec2-amazon-linux.png">
   <h6 align = "center" > Source: Pom </h6>
 </p>
 
@@ -121,6 +121,10 @@ airflow db init
 # Start Airflow webserver
 airflow webserver --port 8080
 ```
+<p align="center">
+  <img width="1000" height="550" src="Images/airflow-ui.png">
+  <h6 align = "center" > Source: Pom </h6>
+</p>
 
 2. **Start the Airflow scheduler** to enable the scheduling of DAGs:
 
