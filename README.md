@@ -163,45 +163,61 @@ Example DAG:
 from airflow import DAG
 from airflow.providers.http.operators.http import SimpleHttpOperator
 from airflow.operators.python_operator import PythonOperator
+from airflow.models import Variable
 from datetime import datetime, timedelta
 import pandas as pd
 import json
+import boto3
 
+# Default args for the Airflow DAG
 default_args = {
     "owner": "airflow",
+    "depends_on_past": False,
     "start_date": datetime(2024, 1, 1),
     "email_on_failure": False,
+    "email_on_retry": False,
     "retries": 1,
     "retry_delay": timedelta(minutes=5),
 }
 
-def process_wot_data(**kwargs):
-    ti = kwargs['ti']
-    data = ti.xcom_pull(task_ids='fetch_wot_data')
-    # Process JSON data and save it to CSV
-    ...
-
+# Define the DAG
 with DAG(
-    dag_id='wot_etl_pipeline',
+    "wot_api_dag",
     default_args=default_args,
-    schedule_interval="@daily",
-    catchup=False
+    schedule_interval="@daily",  # Schedule to run once a day
+    catchup=False,
 ) as dag:
 
+    # Python function to process the WOT API data
+    def process_wot_data(**kwargs):
+
+        # Transform the JSON response into a DataFrame
+        # ...
+       
+        # Upload the file to AWS S3
+        # ...
+       
+    # Task 1: Fetch data from the WOT API
     fetch_wot_data = SimpleHttpOperator(
         task_id="fetch_wot_data",
-        http_conn_id="wot_api_conn",
-        endpoint="v3/targets?t=facebook.com&t=google.com",
-        headers={"x-user-id": "<your_wot_id>", "x-api-key": "<your_api_key>"},
+        http_conn_id="wot_api_conn",  # Airflow connection ID
+        endpoint="v3/targets?t=facebook.com&t=google.com",  
+        headers={
+            "x-user-id": "9027864",  
+            "x-api-key": Variable.get("wot_api_key") 
+        },
         response_filter=lambda response: json.loads(response.text),
         log_response=True
     )
 
+    # Task 2: Process and store the data in AWS S3
     process_data = PythonOperator(
         task_id="process_wot_data",
-        python_callable=process_wot_data
+        python_callable=process_wot_data,
+        provide_context=True
     )
 
+    # Define task order
     fetch_wot_data >> process_data
 ```
 
